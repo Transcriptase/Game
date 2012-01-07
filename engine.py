@@ -6,16 +6,17 @@ class Engine(object):
     def __init__ (self, map, inventory):
         #sets up recognized keywords.
         self.map = map
-        self.inventory = inventory
         self.movement_keywords = ["go", "n", "e", "s", "w"]
         self.inventory_keywords = dict({"take":"take", "pick":"take", "drop":"drop", "use":"use"})
         self.menu_keywords = ["quit", "help", "i", "inv"]
         self.look_keywords = ["look", "search"]
         
     def move_into(self, room_name):
-        #describes the new room
+        #looks up the room with the right label
+        #makes the player's location be that room and prints the description
         self.room_name = room_name
-        self.room = self.map.all_rooms[room_name]
+        self.room = self.map.all_rooms[self.room_name]
+        self.map.player.location = self.room
         self.room.descriptor()
         
     def prompt(self):
@@ -82,7 +83,7 @@ class Engine(object):
             self.menu_commands(self.action)
             return()
         elif self.first_word in self.movement_keywords:
-            self.map.current_room = self.room.movement(self.split_command, self.inventory.inventory)
+            self.map.player.movement(self.split_command)
             return()
         elif self.first_word in self.inventory_keywords:
             self.inventory_parse(self.split_command)
@@ -110,16 +111,20 @@ all_items = items_setup.populator()
 #make all_items a dictionary containing all the item objects
 inventory = map.Inventory()
 #makes an instance of the Inventory class to use as player's inventory
+player = map.Mobile(inventory)
+#makes an instance of the the Mobile class for the player and puts it in the first room
                 
-main_map = map.Map(all_items)
+main_map = map.Map(all_items, player)
 #makes an instance of the Map class and passes it the item dictionary
 main_map.setup()
 #runs the setup function in the map object, which creats each room as an attribute of the map
 main_engine = Engine(main_map, inventory)
 #starts the engine with the map instance
-main_engine.move_into(main_map.current_room)
+main_map.player.location = main_map.tube_room
+main_engine.move_into(main_map.player.location.label)
+#sets the player's location to the first room and moves into it
 
 while True:
     action = main_engine.prompt()
     main_engine.parse(action)
-    main_engine.move_into(main_map.current_room)
+    main_engine.move_into(main_map.player.new_location)

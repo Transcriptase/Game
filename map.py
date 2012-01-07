@@ -8,7 +8,7 @@ class Item(object):
         location,
         keywords,
         type,
-        look_special =False
+        look_special = False
         ):
         self.label = label
         #one word, serves as key in dictionary and shortest name
@@ -64,10 +64,10 @@ class MainPortal(Exit):
     #move_special attribute, then run it.
     def move_special(self, inventory):
         self.inventory = inventory
-        if ("keycard" in self.inventory.keys()) and ("parka" in self.inventory.keys()):
+        if ("keycard" in self.inventory.inventory.keys()) and ("parka" in self.inventory.inventory.keys()):
             self.is_open = True
             return("outside")
-        if ("keycard" in self.inventory.keys()):
+        if ("keycard" in self.inventory.inventory.keys()):
             print """
   The reader beeps as the light turns green, and the door swings open. Outside, a howling wind whips
   across waist-deep drifts of snow. It's hard to see anything through the blizzard. You don't think
@@ -136,6 +136,39 @@ class Inventory(object):
             print "You are carrying:"
         for i, item in self.inventory.iteritems():
             print item.name
+            
+class Mobile(object):
+    #a class for things that move around. Right now that's just the player
+    #tracks inventory and location
+    
+    def __init__(self, inventory):
+        self.inventory = inventory
+        self.location = "tube_room"
+        #a placeholder that's replaced by a room object as soon as it's called
+        self.new_location = "tube_room"
+        #NOT A ROOM OBJECT, just a string matching the label of a room object
+        #the engine's move_into function makes the new player.location
+        #be the room that matches the label
+        
+        
+    def movement(self, action):
+        #called if the command starts with a movement keyword
+        #compares the content of the command to the keywords for
+        #each exit in the room
+        self.command = action
+        self.exit_to_try = mentioned_in(self.command, self.location.exits)
+        if self.exit_to_try == "not_found":
+            print "You can't go there."
+        # check to see if the exit is valid/open
+        elif self.exit_to_try.is_open == False:
+            if hasattr(self.exit_to_try, 'move_special'):
+                self.new_location = self.exit_to_try.move_special(self.inventory)
+            else:
+                print "The %s is closed for now." % self.exit_to_try.name
+        else:
+            print "You go through the %s to the %s." % (self.exit_to_try.name, self.exit_to_try.direction)
+            self.new_location = self.exit_to_try.destination
+        
 
 class ItemsInitializer(object):
     #creates each item and puts it in a dictionary to pass to the map class
@@ -432,28 +465,6 @@ class Room(object):
             #inside the inventory class. confusing names
         self.inventory.drop(self.item_to_try, self.items)
                     
-    def movement(self, action, inventory):
-        #called if the command starts with a movement keyword
-        #compares the content of the command to the keywords for
-        #each exit in the room
-        self.command = action
-        self.inventory = inventory
-        self.exit_to_try = mentioned_in(self.command, self.exits)
-        if self.exit_to_try == "not_found":
-            print "You can't go there."
-            return(self.label)
-        # check to see if the exit is valid/open
-        elif self.exit_to_try.is_open == False:
-            if hasattr(self.exit_to_try, 'move_special'):
-                self.destination = self.exit_to_try.move_special(self.inventory)
-                return(self.destination)
-            else:
-                print "The %s is closed for now." % self.exit_to_try.name
-            return(self.label)
-        # if so, return the exit's destination
-        else:
-            print "You go through the %s to the %s." % (self.exit_to_try.name, self.exit_to_try.direction)
-            return(self.exit_to_try.destination)
             
     def look(self, command):
         #similar to the movement and inventory functions
@@ -544,15 +555,14 @@ class Map(object):
     #modular design: each room object created by its own function
     #then setup function runs each room creation function,
     #which creates each room object as an attribute of the map object
-    def __init__(self, all_items):
+    def __init__(self, all_items, player):
         self.all_items = all_items
+        self.player = player
         #the vector containing all the items is passed to the map
         #so it can distribute them by calling them out of the dictionary
         self.all_rooms = {}
         #a dictionary that will pair room objects and their labels
-        self.current_room = "tube_room"
-        #a string matching the label of the current room
-        #starts in the tube room
+        
         
     def exits_setup(self, label):
     #iterates through the item dictionary and makes a new dictionary containing
