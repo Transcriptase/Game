@@ -138,7 +138,7 @@ class Inventory(object):
             print item.name
             
 class Mobile(object):
-    #a class for things that move around. Right now that's just the player
+    #a class for things that move around. Right now that's just the player.
     #tracks inventory and location
     
     def __init__(self, inventory):
@@ -168,6 +168,65 @@ class Mobile(object):
         else:
             print "You go through the %s to the %s." % (self.exit_to_try.name, self.exit_to_try.direction)
             self.new_location = self.exit_to_try.destination
+    
+    def inventory_take(self, action):
+        #called if the player is trying to pick something in the room up
+        #checks to see if the item (last word of the command) is there,
+        #then calls the pick up function if it finds it. If not, engages the failure function
+        #current failure function is boring.
+        self.command = action
+        self.success = False
+        
+        self.item_to_try = mentioned_in(self.command, self.location.items)
+        if self.item_to_try == "not_found":
+            print "I don't see one of those to pick up."
+        elif self.item_to_try.type != "carryable":
+            print "You can't pick that up."
+        else:   
+            self.inventory.pick_up(self.item_to_try, self.location.items)
+            
+    def inventory_drop(self, action):
+        #called if the player is trying to drop something
+        #reverse of  inventory_take.
+        
+        self.command = action
+        
+        self.item_to_try = self.mentioned_in(self.command, self.inventory.inventory)
+            #have to call the inventory dictionary from 
+            #inside the inventory class. confusing names
+        self.inventory.drop(self.item_to_try, self.location.items)
+                    
+            
+    def look(self, command):
+        #similar to the movement and inventory functions
+        #but called when a look keyword is entered and
+        #prints the full description of any recognized item
+        
+        self.command = command
+        
+        #exits are items and have descriptions, so best would be to
+        #combine the two dictionaries before passing
+        
+        self.things_to_look_at = dict(self.location.items.items())
+        self.things_to_look_at.update(self.location.exits)
+        #and here naming the dict of items "items" gets awkward
+        #first line calls the items() property of the dictionary named "items"
+        #second line mixes in the exits dictionary
+        #this seems awkward but was the best way i could come up with to
+        #add two dicts while leaving the originals intact
+        
+        self.item_to_describe = mentioned_in(self.command, self.things_to_look_at)
+        if self.item_to_describe == "not_found":
+            return False
+        elif self.item_to_describe.look_special == True:
+            print self.item_to_describe.description
+            self.location.look_special(self.item_to_describe.label)
+            return True
+            #not necessary to pass the item label currently b/c there's only
+            #one special event per room, but that could change.
+        else:
+            print self.item_to_describe.description
+            return True
         
 
 class ItemsInitializer(object):
@@ -433,69 +492,7 @@ class Room(object):
             self.visits += 1
         else:
             self.describe_terse()
-        
-                    
-                    
-    def inventory_take(self, action, inventory):
-        #called if the player is trying to pick something in the room up
-        #checks to see if the item (last word of the command) is there,
-        #then calls the pick up function if it finds it. If not, engages the failure function
-        #current failure function is boring.
-        self.command = action
-        self.inventory = inventory
-        self.success = False
-        
-        self.item_to_try = mentioned_in(self.command, self.items)
-        if self.item_to_try == "not_found":
-            print "I don't see one of those to pick up."
-        elif self.item_to_try.type != "carryable":
-            print "You can't pick that up."
-        else:   
-            self.inventory.pick_up(self.item_to_try, self.items)
-            
-    def inventory_drop(self, action, inventory):
-        #called if the player is trying to drop something
-        #reverse of  inventory_take.
-        
-        self.command = action
-        self.inventory = inventory
-        
-        self.item_to_try = self.mentioned_in(self.command, self.inventory.inventory)
-            #have to call the inventory dictionary from 
-            #inside the inventory class. confusing names
-        self.inventory.drop(self.item_to_try, self.items)
-                    
-            
-    def look(self, command):
-        #similar to the movement and inventory functions
-        #but called when a look keyword is entered and
-        #prints the full description of any recognized item
-        
-        self.command = command
-        
-        #exits are items and have descriptions, so best would be to
-        #combine the two dictionaries before passing
-        
-        self.things_to_look_at = dict(self.items.items())
-        self.things_to_look_at.update(self.exits)
-        #and here naming the dict of items "items" gets awkward
-        #first line calls the items() property of the dictionary named "items"
-        #second line mixes in the exits dictionary
-        #this seems awkward but was the best way i could come up with to
-        #add two dicts while leaving the originals intact
-        
-        self.item_to_describe = mentioned_in(self.command, self.things_to_look_at)
-        if self.item_to_describe == "not_found":
-            return False
-        elif self.item_to_describe.look_special == True:
-            print self.item_to_describe.description
-            self.look_special(self.item_to_describe.label)
-            return True
-            #not necessary to pass the item label currently b/c there's only
-            #one special event per room, but that could change.
-        else:
-            print self.item_to_describe.description
-            return True
+
     
         
 

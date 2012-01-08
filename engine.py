@@ -52,12 +52,12 @@ class Engine(object):
 
     def inventory_parse(self, command):
         #decides whether the command is to take, drop, or use an item and calls the appropriate
-        #room function.
+        #mobile function.
         self.command = command
         if self.inventory_keywords[self.command[0]] == "take":
-            self.room.inventory_take(self.command, inventory)
+            self.map.player.inventory_take(self.command)
         elif self.inventory_keywords[self.command[0]] == "drop":
-            self.room.inventory_drop(self.command, inventory)
+            self.map.player.inventory_drop(self.command)
         else:
             print "Inventory parsing error" #should never happen
     
@@ -89,11 +89,11 @@ class Engine(object):
             self.inventory_parse(self.split_command)
             return()
         elif self.first_word in self.look_keywords:
-            self.in_room = self.room.look(self.split_command)
+            self.in_room = self.map.player.look(self.split_command)
             if self.in_room == True:
                 return ()
             else:
-                self.in_inv = self.inventory.look(self.split_command)
+                self.in_inv = self.map.player.inventory.look(self.split_command)
                 if self.in_inv == True:
                     return()
                 else:
