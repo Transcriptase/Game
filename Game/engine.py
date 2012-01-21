@@ -1,13 +1,19 @@
-import map
 from sys import exit
 
 class Engine(object):
-#Takes a map object and an inventory item and manipulates them
-    def __init__ (self, map, inventory):
+#Parses player commands and manipulates a map object
+    def __init__ (self, map, player):
         #sets up recognized keywords.
         self.map = map
+        self.player = player
+        
         self.movement_keywords = ["go", "n", "e", "s", "w"]
-        self.inventory_keywords = dict({"take":"take", "pick":"take", "drop":"drop", "use":"use"})
+        self.inventory_keywords = dict({
+            "take":"take",
+            "pick":"take",
+            "drop":"drop",
+            "use":"use"
+        })
         self.menu_keywords = ["quit", "help", "i", "inv"]
         self.look_keywords = ["look", "search"]
         
@@ -16,8 +22,8 @@ class Engine(object):
         #makes the player's location be that room and prints the description
         self.room_name = room_name
         self.room = self.map.all_rooms[self.room_name]
-        self.map.player.location = self.room
-        self.room.descriptor()
+        self.player.location = self.room
+        self.room.describe()
         
     def prompt(self):
         #prints the prompt and returns the input
@@ -37,7 +43,7 @@ class Engine(object):
             else:
                 return(False)
         elif command in ['i', 'inv', 'inventory']:
-            self.inventory.list()
+            self.player.inventory.list()
         else:
             self.parse_fail()
             return(False)
@@ -54,12 +60,16 @@ class Engine(object):
         #decides whether the command is to take, drop, or use an item and calls the appropriate
         #mobile function.
         self.command = command
+        
         if self.inventory_keywords[self.command[0]] == "take":
-            self.map.player.inventory_take(self.command)
+            self.item_to_try = self.mentioned_in(self.command, self.player.location.items)
+            self.player.take(self.item_to_try)
         elif self.inventory_keywords[self.command[0]] == "drop":
-            self.map.player.inventory_drop(self.command)
+            self.item_to_try = self.mentioned_in(self.command, self.player.inventory.inv_list)
+            self.player.drop(self.item_to_try)
         else:
             print "Inventory parsing error" #should never happen
+            
     
     def look_fail(self, command):
         #called when a look command doesn't refer to anything
@@ -69,62 +79,74 @@ class Engine(object):
 
     def parse(self, action):  
         #breaks commands into categories and then calls an appropriate function
-        #there's a lot of dependence on returning "stay" for all commands that don't cause
-        #movement, which seems inelegant
-        #because i borrowed that central loop from the example game
-        #redesign the main loop to stay by default and only change rooms when needed?
+               
         self.action = action
         self.split_command = self.action.split()
         #splits the input into a list of individual words
         self.first_word = self.split_command[0]
         #pulls out the first word, then checks to see if it's in a recognizable category
         #then calls the appropriate function
+        
         if self.first_word in self.menu_keywords:
             self.menu_commands(self.action)
-            return()
         elif self.first_word in self.movement_keywords:
-            self.map.player.movement(self.split_command)
-            return()
+            self.exit_to_try = self.move_parse(self.split_command)
         elif self.first_word in self.inventory_keywords:
             self.inventory_parse(self.split_command)
-            return()
         elif self.first_word in self.look_keywords:
-            self.in_room = self.map.player.look(self.split_command)
-            if self.in_room == True:
-                return ()
-            else:
-                self.in_inv = self.map.player.inventory.look(self.split_command)
-                if self.in_inv == True:
-                    return()
-                else:
-                    self.look_fail(self.split_command)
-                    return()
+            self.look_parse(self.split_command)
         else:
             self.parse_fail()
-            return ()
-
-
-items_setup = map.ItemsInitializer()
-#creates an instance of the item initializer
-all_items = items_setup.populator()
-#uses the item initializer to 
-#make all_items a dictionary containing all the item objects
-inventory = map.Inventory()
-#makes an instance of the Inventory class to use as player's inventory
-player = map.Mobile(inventory)
-#makes an instance of the the Mobile class for the player and puts it in the first room
-                
-main_map = map.Map(all_items, player)
-#makes an instance of the Map class and passes it the item dictionary
-main_map.setup()
-#runs the setup function in the map object, which creats each room as an attribute of the map
-main_engine = Engine(main_map, inventory)
-#starts the engine with the map instance
-main_map.player.location = main_map.tube_room
-main_engine.move_into(main_map.player.location.label)
-#sets the player's location to the first room and moves into it
-
-while True:
-    action = main_engine.prompt()
-    main_engine.parse(action)
-    main_engine.move_into(main_map.player.new_location)
+            
+            
+    def look_parse(self, command):
+        self.command = command
+        
+        self.looked_at = self.mentioned_in(self.command, self.player.can_see())
+        
+        if self.looked_at.label != 'not_found':
+            print self.looked_at.description
+        else:
+            self.look_fail()
+            
+        if self.looked_at.look_special == True:
+            self.player.look_special(self.looked_at)
+            
+       
+    def move_parse(self, command):
+        self.command = command
+        self.exit_to_try = self.mentioned_in(self.command, self.player.location.exits)
+        self.player.move(self.exit_to_try)
+        self.move_into(self.player.new_location)
+            
+    def look_fail(self):
+        print "You don't see anything like that here."
+            
+    def mentioned_in(self, command, items_to_search):
+    #to use on both exits and items
+    #takes a command (from the user, split into workds) and a dictionary of
+    #either exits or items
+    #checks to see if the command contains any of the keywords
+    #attached to the items in the dictionary
+    #if successful, returns the mentioned item
+    #if not, returns the dummy item "not_found"
+        
+        self.command = command
+        self.items_to_search = items_to_search
+        self.success = False
+        
+        for i, item in self.items_to_search.iteritems():
+            for word in self.command:
+                if word in item.keywords:
+                    self.exit_to_try = item
+                    self.success = True
+        if self.success == True:
+            return(self.exit_to_try)
+        else:
+            return(self.map.all_exits["not_found"])
+            
+    def simulate_play(self, command_list):
+    #for debugging purposes, takes a list of commands and parses them in order
+        self.command_list = command_list
+        for command in self.command_list:
+            self.parse(command)
