@@ -1,3 +1,5 @@
+import csv
+
 class Room(object):
     #organizes and manipulates rooms
     
@@ -58,49 +60,6 @@ class Room(object):
             if exit.location == self.label:
                 self.exits[exit.label] = exit
     
-def create_config_list():
-    
-    config_list= []
-    
-    tube_room_config = {
-        'label': 'tube_room',
-        'verbose_description': """The room is lined with large, glass-fronted tubes like the one
-you woke up in. The fluorescent lights flicker on and off, buzzing.
-In the center of the room is a metal operating table. A cart of
-surgical instruments is overturned nearby.""",
-        'terse_description': "You are in an operating room, lined with mysterious person-sized tubes"
-        }
-    config_list.append(tube_room_config)
-    
-    central_hallway_west_config = {
-        'label': 'central_hallway_west',
-        'verbose_description': """The main hallway arcs overhead, and you stand on the western end. The dull thumping of enormous industrial fans
-comes from overhead, and their shadows spin crazily on the floor. There's a
-wide smear of blood on the grey-green tiles of the floor, starting under one
-of the nothern doors and growing gradually thinner as it extends out the main portal
-to the east.
-""",
-        'terse_description': "You are in the western end of the main hallway."
-        }
-    config_list.append(central_hallway_west_config)
-    
-    kitchen_config = {
-        'label': 'kitchen',
-        'verbose_description':"""It seems this was the facility's kitchen. The shelves are lined with empty boxes.""",
-        'terse_description': "You are in the kitchen."
-        }
-    config_list.append(kitchen_config)
-    
-    central_hallway_east_config = {
-        'label': 'central_hallway_east',
-        'verbose_description':"""You stand in the eastern half of the central hallway. There's a persistent mechanical hum on the
-fringes of your hearing. A thick trail of blood begins under the door to the north and leads out
-the main portal, growing thinner as it goes.""",
-        'terse_description': "You are in the east half of the main hallway."
-        }
-    config_list.append(central_hallway_east_config)
-    
-    return(config_list)
     
 def create_room(config):
     new_room = Room()
@@ -109,10 +68,10 @@ def create_room(config):
     
 def populate():
     all_rooms = {}
-    config_list = create_config_list()
-    for config in config_list:
+    f = open("data/rooms.csv", "rb")
+    reader = csv.DictReader(f)
+    
+    for config in reader:
         new_room = create_room(config)
         all_rooms[new_room.label] = new_room
     return(all_rooms)
-            
-            

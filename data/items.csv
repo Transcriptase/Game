@@ -1,0 +1,8 @@
+label,name,description,location,keywords,type,look_special
+scalpel,sharp scalpel,"The scalpel is sharp, but flecks of rust-colored blood hint that it's been used.'",tube_room,scalpel,carryable,no
+corpse,twisted corpse,"The body is twisted unaturally, but there's no blood, except on his hands.
+He is wearing a lab coat.
+His pockets are stuffed with energy bars and dried food.
+His keycard hangs from a lanyard around his neck.",kitchen,corpse body,scenery,yes
+keycard,keycard,The dead scientist's keycard.,kitchen,keycard key card,hidden,no
+steak,juicy steak,"A juicy, medium-rare steak.",kitchen,steak meat,carryable,no

@@ -23,20 +23,14 @@ def test_item_setup():
     assert_equal(all_items['scalpel'].type, 'carryable')
     
 def test_exit_setup():
-    all_exits = Game.exits.populate()
+    engine = setup()
     
-    assert_equal(all_exits['tube_to_hall'].destination, 'central_hallway_west')
-    assert_equal(all_exits['tube_to_hall_rev'].destination, 'tube_room')
-    assert_equal('s' in all_exits['tube_to_hall_rev'].keywords, True)
-    assert_equal('south' in all_exits['tube_to_hall_rev'].keywords, True)
-    assert_equal(all_exits['main_portal'].is_open, False)
+    assert_equal(engine.map.all_exits['tube_to_hall'].destination, 'central_hallway_west')
+    assert_equal(engine.map.all_exits['tube_to_hall_rev'].destination, 'tube_room')
+    assert_equal('s' in engine.map.all_exits['tube_to_hall_rev'].keywords, True)
+    assert_equal('south' in engine.map.all_exits['tube_to_hall_rev'].keywords, True)
+    assert_equal(engine.map.all_exits['main_portal'].is_open, False)
     
-    config_list = Game.exits.create_config_list()
-    config = config_list[0]
-    reversed_config = Game.exits.create_config_reverse(config)
-    assert_equal('central_hallway_west', reversed_config['location'])
-    assert_equal('tube_room', reversed_config['destination'])
-
     
 def test_inventory_setup():
     all_items = Game.items.populate()

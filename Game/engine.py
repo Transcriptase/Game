@@ -109,7 +109,7 @@ class Engine(object):
         else:
             self.look_fail()
             
-        if self.looked_at.look_special == True:
+        if self.looked_at.look_special == 'yes':
             self.player.look_special(self.looked_at)
             
        

@@ -1,15 +1,29 @@
 import items
+import csv
 
 class Exit(items.Item):
     def exit_setup(self, config):
         self.config = config
+        self.abbreviations = {
+            'north': 'n',
+            'south': 's',
+            'east': 'e',
+            'west': 'w'
+            }
         
         self.setup(self.config)
         #sets up the properties that Exits share with Items
-        
-        self.is_open = config['is_open']
+        if config['is_open'] == 'yes':
+            self.is_open = True
+        else:
+            self.is_open = False
+        #necessary because the CSV import is a string, not a boolean
+            
         self.direction = config['direction']
         self.destination = config['destination']
+        
+        self.keywords.append(self.direction)
+        self.keywords.append(self.abbreviations[self.direction])
         #sets up the exit-specific properties
         
 # Sets up exit objects by creating a config dictionary for each one
@@ -70,95 +84,8 @@ you'd survive long out there without some protection from the cold.
         else:
             print "You think you'll need a keycard to open that door."
             return(False)
-            
-        
-
-def create_config_list():
-    #To create an exit, make a config vector and add it to the config list
-    
-    config_list = []
-    
-    tube_to_hall_config = {
-        'label':'tube_to_hall',
-        'name':'pair of double doors',
-        'description':"""
-The double doors are heavy, with high circular windows lined with chicken wire.""",
-        'location':'tube_room',
-        'keywords':["door", "doors", "north", "n"],
-        'type':'exit',
-        'look_special': False,
-        'is_open':True,
-        'direction':'north',
-        'destination':'central_hallway_west'
-    }
-    config_list.append(tube_to_hall_config)
-    
-    hall_to_kitchen_config = {
-        'label':'hall_to_kitchen',
-        'name':'broken door hanging from its hinges',
-        'description':"""
-The door seems to have been locked, but then broken open from the outside. The metal is dented.""",
-        'location':'central_hallway_west',
-        'keywords':["broken", "north", "n"],
-        'type':'exit',
-        'look_special': False,
-        'is_open':True,
-        'direction':'north',
-        'destination':'kitchen'
-    }
-    config_list.append(hall_to_kitchen_config)
-    
-    hall_link_config = {
-        'label':'hall_link',
-        'name':'hallway stretching off',
-        'description':"""
-The hallway stretches out to the east. It's dim, but you can see more doors and a looming main portal in the distance.""",
-        'location':'central_hallway_west',
-        'keywords':["hall", "east", "e"],
-        'type':'exit',
-        'look_special': False,
-        'is_open':True,
-        'direction':'east',
-        'destination':'central_hallway_east'
-    }
-    config_list.append(hall_link_config)
-    
-    main_portal_config = {
-        'label':'main_portal',
-        'name':'huge set of sliding steel doors, with a card reader nearby',
-        'description':"""
-This looks like the main entrance to the facility. Two enormous slabs of metal, with
-black rubber covering every possible seam. A card reader blinks red beside it.
-        """,
-        'location':'central_hallway_east',
-        'keywords':["main", "sliding", "e"],
-        'type':'exit',
-        'look_special': False,
-        'is_open':False,
-        'direction':'east',
-        'destination':'outside'
-    }
-    config_list.append(main_portal_config)
-    
-    failure_config = {
-        'label' : 'not_found',
-        'name':'not found',
-        'description':"A dummy item to be passed when search fails",
-        'location':'',
-        'keywords':[],
-        'type':'hidden',
-        'look_special': False,
-        'is_open':False,
-        'direction':'east',
-        'destination':''
-    }
-    config_list.append(failure_config)
-        
-    
-    return(config_list)
-    
-    
-    
+          
+          
 def create_exit(config):
     new_exit = Exit()
     new_exit.exit_setup(config)
@@ -212,8 +139,11 @@ def special_setup(all_exits):
     
 def populate():
     all_exits = {}
-    config_list = create_config_list()
-    for config in config_list:
+    f = open('data/exits.csv', 'rb')
+    reader = csv.DictReader(f)
+    
+    for config in reader:
+        config['keywords'] = config['keywords'].split()
         new_exit = create_exit(config)
         all_exits[new_exit.label] = new_exit
         reverse_exit = create_exit(create_config_reverse(config))

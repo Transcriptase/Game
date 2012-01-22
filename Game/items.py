@@ -1,3 +1,5 @@
+import csv
+
 class Item(object):
     #properties of all items
 
@@ -48,52 +50,6 @@ class Item(object):
 #'type': a flag that determines properties. Possible values: "carryable", "scenery", "exit", "hidden"
 #'look_special": set to True to trigger room-specific events when the item is examined
 
-def create_config_list():
-    #create a list of config vectors for each item
-    #to create a new item, make a config vector and add it to the list
-    config_list = []
-    scalpel_config = {
-        'label':'scalpel',
-        'name':'sharp scalpel',
-        'description':"""The scalpel is sharp, but flecks of rust-colored blood hint that it's been used.""",
-        'location':'tube_room',
-        'keywords':['scalpel'],
-        'type':'carryable',
-        'look_special':False
-    }
-    config_list.append(scalpel_config)
-    
-    corpse_config = {
-        'label':'corpse',
-        'name':'twisted corpse',
-        'description':"""
-The body is twisted unaturally, but there's no blood, except on his hands.
-He is wearing a lab coat.
-His pockets are stuffed with energy bars and dried food.
-His keycard hangs from a lanyard around his neck.
-        """,
-        'location':'kitchen',
-        'keywords':['corpse', 'body'],
-        'type':'scenery',
-        'look_special': True
-    }
-    config_list.append(corpse_config)
-    
-    keycard_config = {
-        'label':'keycard',
-        'name':'keycard',
-        'description':"""
-The dead scientist's keycard.
-        """,
-        'location':'kitchen',
-        'keywords':['keycard', 'key', 'card'],
-        'type':'hidden',
-        'look_special': False
-    }
-    config_list.append(keycard_config)
-    
-    
-    return(config_list)
  
     
     
@@ -106,9 +62,14 @@ def populate():
     #runs each of the item creation functions
     #and returns a dictionary of all the items
     all_items = {}
-    config_list = create_config_list()
-    for config in config_list:
-        new_item = (create_item(config))
+    
+    f = open('data/items.csv', 'rb')
+    reader = csv.DictReader(f)
+    
+    for row in reader:
+        row['keywords'] = row['keywords'].split()
+        new_item = (create_item(row))
         all_items[new_item.label] = new_item
+        
     return(all_items)
     

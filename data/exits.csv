@@ -1,0 +1,6 @@
+label,name,description,location,keywords,type,look_special,is_open,direction,destination
+tube_to_hall,pair of double doors,"The double doors are heavy, with high circular windows lined with chicken wire.",tube_room,door doors,exit,no,yes,north,central_hallway_west
+hall_to_kitchen,broken door hanging from its hinges,"The door seems to have been locked, but then broken open from the outside. The metal is dented.",central_hallway_west,broken,exit,no,yes,north,kitchen
+hall_link,hallway stretching off,"The hallway stretches out to the east. It's dim, but you can see more doors and a looming main portal in the distance.",central_hallway_west,hall,exit,no,yes,east,central_hallway_east
+main_portal,"huge set of sliding steel doors, with a card reader nearby","This looks like the main entrance to the facility. Two enormous slabs of metal, with black rubber covering every possible seam. A card reader blinks red beside it.",central_hallway_east,main sliding,exit,no,no,east,outside
+not_found,not found,A dummy item to be passed when search fails,,,hidden,no,no,east,
