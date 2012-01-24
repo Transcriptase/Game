@@ -19,8 +19,11 @@ class Item(object):
         self.location = config['location']
         #string matching label of starting room
         
-        self.keywords = config['keywords']
+        self.keywords = config['keywords'] + config['use_words']
         #a list of synonyms and other words that would help identify it
+        #the use words are added to keywords list, so use words are a 
+        #subset of keywords, which allows them to be searched at the
+        #same time
         
         self.type = config['type']
         # possible values: "carryable", "exit", "scenery", "hidden"

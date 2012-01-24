@@ -20,19 +20,17 @@ class Room(object):
         for i, item in self.items.iteritems():
             if item.type != 'hidden':
                 print "There is a %s here." % item.name
-        print "\n"
         for i, exit in self.exits.iteritems():
             print "There is a %s to the %s." % (exit.name, exit.direction)
-        print'\n'
         
     def describe_verbose(self):
         #prints the verbose room description
-        print self.verbose_description
+        print "\n%s" % self.verbose_description
         self.extra_description()
             
     def describe_terse(self):
         #prints the terse room description
-        print self.terse_description
+        print "\n%s" % self.terse_description
         self.extra_description()
         
     def describe(self):

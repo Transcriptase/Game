@@ -22,7 +22,7 @@ class Mobile(object):
         if self.exit.label == 'not_found':
             print "You can't go that way."
         elif self.exit.shall_pass(self):
-            print "You go through the %s to the %s." % (self.exit.name, self.exit.direction)
+            print "You go through the %s to the %s.\n" % (self.exit.name, self.exit.direction)
             self.new_location = self.exit.destination
         else:
             print "You can't go that way."
@@ -33,11 +33,11 @@ class Mobile(object):
         self.item = item
         
         if self.item.label == "not_found":
-            print "I don't see one of those to pick up."
+            print "I don't see one of those to pick up.\n"
         elif self.item.type != "carryable":
-            print "You can't pick that up."
+            print "You can't pick that up.\n"
         else:
-            print "You pick up the %s." % self.item.name
+            print "You pick up the %s.\n" % self.item.name
             self.inventory.add(self.item)
             del self.location.items[self.item.label]
             
@@ -47,7 +47,7 @@ class Mobile(object):
         
         self.item = item
         if self.item.label == 'not_found':
-            print "You're not carrying one of those."
+            print "You're not carrying one of those.\n"
         else:
             self.inventory.remove(self.item)
             self.location.items[self.item.label] = self.item

@@ -7,14 +7,23 @@ class Engine(object):
         self.map = map
         self.player = player
         
-        self.movement_keywords = ["go", "n", "e", "s", "w"]
+        self.movement_keywords = [
+            "go",
+            "n",
+            "e",
+            "s",
+            "w",
+            "north",
+            "east",
+            "south",
+            "west"]
         self.inventory_keywords = dict({
             "take":"take",
             "pick":"take",
             "drop":"drop",
         })
         self.menu_keywords = ["quit", "help", "i", "inv"]
-        self.look_keywords = ["look", "search"]
+        self.look_keywords = ["look", "search", "read"]
         
     def move_into(self, room_name):
         #looks up the room with the right label
@@ -26,7 +35,7 @@ class Engine(object):
         
     def prompt(self):
         #prints the prompt and returns the input
-        print "What do you want to do?"
+        print "\nWhat do you want to do?"
         action = raw_input("> ")
         return action
    
@@ -115,7 +124,9 @@ class Engine(object):
     def look_parse(self, command):
         self.command = command
         
-        if self.command == "look":
+        if len(self.command) == 1:
+            #single-word phrases that trigger the look parser, like "look"
+            #and "search" will print the location's full description
             self.player.location.describe_verbose()
             
         else:
@@ -140,6 +151,7 @@ class Engine(object):
         print "You don't see anything like that here."
         
     def use_parse(self, command):
+        #this is triggered if the command starts with a possible use word
         self.command = command
         
         self.use_item = self.mentioned_in(self.command, self.player.can_see())
@@ -183,3 +195,4 @@ class Engine(object):
     def victory(self):
         print "With a touch of the ignition button, the snowmobile roars with way more power than it needs. You climb on and steer it out into the blinding snow, hoping you will reach civilization while you can still be described as civilized."
         print "Congratulations! You are a winner!"
+        exit(1)

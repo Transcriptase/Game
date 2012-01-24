@@ -204,7 +204,7 @@ def test_engine():
         'n', #into lab
         'look fridge', #reveal syringe
         'take syringe',
-        'use syringe'
+        'inject self'
         ]
         
     engine.simulate_play(inject)
@@ -218,7 +218,7 @@ def test_engine():
         'w', #to west hall
         'w', # down stairs
         's', # into reactor
-        'use key', #open core
+        'unlock cylinder', #open core
         'take rod'
         ]
         
@@ -233,7 +233,7 @@ def test_engine():
         'e', #to east hall
         'e', #outside
         's', #to garage
-        'use snowmobile' #fix snowmobile
+        'fix snowmobile' #fix snowmobile
         ]
         
     engine.simulate_play(fix)

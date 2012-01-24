@@ -32,14 +32,14 @@ class Inventory(object):
         if self.has(self.item.label):
             print self.item.description
         else:
-            print "You are not carrying a %s." % self.item.name
+            print "You are not carrying a %s.\n" % self.item.name
         
     def list(self):
     #lists the contents of the inventory
         if self.inv_list == {}:
             print "You are not carrying anything."
         else:
-            print "You are carrying:"
+            print "You are carrying:\n"
         for i, item in self.inv_list.iteritems():
             print item.name
             
