@@ -15,12 +15,15 @@ class Room(object):
         
         
     def extra_description(self):
+        print '\n'
         #prints description of items and exits
         for i, item in self.items.iteritems():
             if item.type != 'hidden':
                 print "There is a %s here." % item.name
+        print "\n"
         for i, exit in self.exits.iteritems():
             print "There is a %s to the %s." % (exit.name, exit.direction)
+        print'\n'
         
     def describe_verbose(self):
         #prints the verbose room description

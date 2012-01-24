@@ -1,8 +1,18 @@
-label,name,description,location,keywords,type,look_special
-scalpel,sharp scalpel,"The scalpel is sharp, but flecks of rust-colored blood hint that it's been used.'",tube_room,scalpel,carryable,no
+label,name,description,location,keywords,type,look_special,use_words,take_fail
+scalpel,sharp scalpel,"The scalpel is sharp, but flecks of rust-colored blood hint that it's been used.'",tube_room,scalpel,carryable,no,cut slice,
 corpse,twisted corpse,"The body is twisted unaturally, but there's no blood, except on his hands.
 He is wearing a lab coat.
 His pockets are stuffed with energy bars and dried food.
-His keycard hangs from a lanyard around his neck.",kitchen,corpse body,scenery,yes
-keycard,keycard,The dead scientist's keycard.,kitchen,keycard key card,hidden,no
-steak,juicy steak,"A juicy, medium-rare steak.",kitchen,steak meat,carryable,no
+His keycard hangs from a lanyard around his neck.",kitchen,corpse body,scenery,yes,,
+keycard,keycard,The dead scientist's keycard.,kitchen,keycard key card,hidden,no,,
+parka,a bright red parka,"Heavy insulation lines this coat, and every seam is reinforced. It was made to withstand serious cold.",closet,parka coat red,carryable,no,,
+suit,a protective hazmat suit,"The suit is bright read, with a transparent bubble around the head that would be comical if it weren't sinister. A long, clean cut has opened it from groin to neck. You suspect that it won't offer much protection in this condition.",reactor_entrance,suit hazmat,scenery,no,,
+frozen_corpse,a bloody corpse,"The blood trail ends here.  A layer of ice has formed over every exposed surface of the body, which is hunched over the snowmobile. A key glistens in his hand. You notice that the parka is tight on him, barely fitting around bulging muscles.",garage,corpse body blood,scenery,yes,,
+key,a key,The key is clenched in the corpse's frozen fist.,garage,key,hidden,no,unlock,
+snowmobile,a heavily modified snowmobile here,"Parts are scattered all around the last remaining snowmobile. You're not a mechanic, but it looks like the gas tank has been removed and a strange cylindrical assembly mounted in its place. The ignition is a simple button. It doesn't need a key.",garage,snowmobile mobile vehicle button,scenery,no,start ride drive,
+core,cylinder mounted in the center of the otherwise-bare floor.,The top of the tube looks like it could be removed. There is a keyhole in the center. Even more severe warnings are written on the sides.,reactor,cylinder tube reactor core,scenery,no,,
+open_core,opened fuel container,The top of the tube opens and more green light floods out.,reactor,cylinder tube reactor core,hidden,no,,
+rod,glowing fuel rod,The rod gleams with a sickly green glow. It's warm to the touch.,reactor,rod fuel,hidden,no,,
+syringe,a syringe filled with green liquid,This intimidatingly large syringe is filled with green liquid. The glowing is probably just your imagination.,lab,syringe needle liquid drug,hidden,no,inject,
+fridge,a glass-fronted refrigerator,"The blood trail leads to the refrigerator, whose contents are scattered as if someone were desperately searching for something. The item that shows the most evidence of handling is a rack containing a large syringe of green liquid.",lab,fridge refrigerator,scenery,yes,,
+notebook,notebook,"The last entry in the notebook reads:  ""We belive the compound is ready for the next stage of testing. Mouse results for muscle building and radiation resistance are well above minimal levels. Behavioral changes are noticable but within tolerances.""",lab,book notebook read note notes,scenery,no,,

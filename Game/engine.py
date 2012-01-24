@@ -12,7 +12,6 @@ class Engine(object):
             "take":"take",
             "pick":"take",
             "drop":"drop",
-            "use":"use"
         })
         self.menu_keywords = ["quit", "help", "i", "inv"]
         self.look_keywords = ["look", "search"]
@@ -95,22 +94,40 @@ class Engine(object):
             self.inventory_parse(self.split_command)
         elif self.first_word in self.look_keywords:
             self.look_parse(self.split_command)
+        #that was the easy part, since they use predictable verbs        
+        
         else:
-            self.parse_fail()
+            self.use_words = self.use_words_lookup()
+            if self.first_word in self.use_words:
+                self.use_parse(self.split_command)
+            else:
+                self.parse_fail()
+                
+    def use_words_lookup(self):
+        self.use_words = ['use']
+        for label, item in self.player.can_see().iteritems():
+            if item.use_words != "":
+                for word in item.use_words:
+                    self.use_words.append(word)
+        return(self.use_words)
             
             
     def look_parse(self, command):
         self.command = command
         
-        self.looked_at = self.mentioned_in(self.command, self.player.can_see())
-        
-        if self.looked_at.label != 'not_found':
-            print self.looked_at.description
-        else:
-            self.look_fail()
+        if self.command == "look":
+            self.player.location.describe_verbose()
             
-        if self.looked_at.look_special == 'yes':
-            self.player.look_special(self.looked_at)
+        else:
+            self.looked_at = self.mentioned_in(self.command, self.player.can_see())
+        
+            if self.looked_at.label != 'not_found':
+                print self.looked_at.description
+            else:
+                self.look_fail()
+            
+            if self.looked_at.look_special == 'yes':
+                self.player.look_special(self.looked_at)
             
        
     def move_parse(self, command):
@@ -121,6 +138,18 @@ class Engine(object):
             
     def look_fail(self):
         print "You don't see anything like that here."
+        
+    def use_parse(self, command):
+        self.command = command
+        
+        self.use_item = self.mentioned_in(self.command, self.player.can_see())
+        if self.use_item.label == "not_found":
+            self.use_fail()
+        else:
+            self.player.use(self.use_item)
+            
+    def use_fail(self):
+        print "You don't see any way to do that."
             
     def mentioned_in(self, command, items_to_search):
     #to use on both exits and items
@@ -150,3 +179,7 @@ class Engine(object):
         self.command_list = command_list
         for command in self.command_list:
             self.parse(command)
+    
+    def victory(self):
+        print "With a touch of the ignition button, the snowmobile roars with way more power than it needs. You climb on and steer it out into the blinding snow, hoping you will reach civilization while you can still be described as civilized."
+        print "Congratulations! You are a winner!"

@@ -71,21 +71,30 @@ class Exit(items.Item):
 #Exit object's "shall_pass" attribute.
 
     def main_portal_special(self, player):
-        if player.inventory.has('keycard') and player.inventory.has('parka'):
+        self.player = player
+        if self.player.inventory.has('keycard') and self.player.inventory.has('parka'):
             self.is_open = True
             return(True)
-        elif player.inventory.has('keycard'):
+        elif self.player.inventory.has('keycard'):
             print """
-The reader beeps as the light turns green, and the door swings open. Outside, a howling wind whips
-across waist-deep drifts of snow. It's hard to see anything through the blizzard. You don't think
-you'd survive long out there without some protection from the cold.
+    The reader beeps as the light turns green, and the door swings open. Outside, a howling wind whips
+    across waist-deep drifts of snow. It's hard to see anything through the blizzard. You don't think
+    you'd survive long out there without some protection from the cold.
             """
             return(False)
         else:
             print "You think you'll need a keycard to open that door."
             return(False)
-          
-          
+            
+    def reactor_special(self, player):
+        self.player = player
+        if self.player.injected == False:
+            print "You really don't think it's a good idea to go in there unprotected."
+            return False
+        else:
+            print "You step through the door. You're pretty sure that you wouldn't experience radiation exposure as a slight subdermal tingle, so that's probably your imagination."
+            return True
+            
 def create_exit(config):
     new_exit = Exit()
     new_exit.exit_setup(config)
@@ -134,6 +143,9 @@ def create_config_reverse(config):
     
 def special_setup(all_exits):
     all_exits['main_portal'].shall_pass = all_exits['main_portal'].main_portal_special
+    all_exits['main_portal_rev'].shall_pass = all_exits['main_portal'].main_portal_special
+    all_exits['reactor_door'].shall_pass = all_exits['reactor_door'].reactor_special
+    all_exits['reactor_door_rev'].shall_pass = all_exits['reactor_door'].reactor_special
     return(all_exits)
     
     
@@ -144,6 +156,9 @@ def populate():
     
     for config in reader:
         config['keywords'] = config['keywords'].split()
+        config['use_words'] = config['use_words'].split()
+        #make entries into lists before passing to creation function
+        
         new_exit = create_exit(config)
         all_exits[new_exit.label] = new_exit
         reverse_exit = create_exit(create_config_reverse(config))

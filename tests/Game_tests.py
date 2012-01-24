@@ -74,6 +74,30 @@ def test_mobile():
     
     assert_equal(player.location.items['keycard'].type, "carryable")
     
+    player.location = engine.map.all_rooms['garage']
+    
+    assert_equal(player.location.items['key'].type, "hidden")
+    
+    player.look_special(player.location.items['frozen_corpse'])
+    
+    assert_equal(player.location.items['key'].type, "scenery")
+    
+    player.cut()
+    
+    assert_equal(player.location.items['key'].type, "carryable")
+    
+    player.inventory.add(engine.map.all_items['syringe'])
+    player.inject()
+    
+    assert_equal(player.injected, True)
+    
+    player.location = engine.map.all_rooms['garage']
+    player.inventory.add(engine.map.all_items['rod'])
+    
+    player.fix()
+    
+    assert_equal(player.victory, True)
+    
     
     
 def test_engine():
@@ -111,6 +135,7 @@ def test_engine():
     #player is in west hall and has dropped scalpel
     
     dead_end = [
+        'take scalpel', #pick scalpel back up for cut test
         'e', #move to east hall
         'e', #try main portal
         'go east' #try main portal again
@@ -121,17 +146,112 @@ def test_engine():
     assert_equal(engine.player.location.label, 'central_hallway_east')
     #player is still in east hall despite three east commands
     
-    find_key = [
+    find_keycard = [
         'w', #move to west hall
         'go north', #move to kitchen
         'look corpse', #unhide keycard
         'take keycard'
         ]
     
-    engine.simulate_play(find_key)
+    engine.simulate_play(find_keycard)
     
     assert_equal(engine.player.location.label, 'kitchen')
     assert_equal(engine.player.inventory.has('keycard'), True)
     #player is in kitchen holding keycard
     
+    find_parka = [
+        's', #move to west hall
+        'e', #move to east hall
+        's', #move to closet
+        'take parka' #pick up parka
+        ]
+    engine.simulate_play(find_parka)
+    assert_equal(engine.player.location.label, 'closet')
+    assert_equal(engine.player.inventory.has('parka'), True)
+    
+    open_main = [
+        'n', #move to east hall
+        'e' #go out main portal
+        ]
+        
+    engine.simulate_play(open_main)
+    assert_equal(engine.player.location.label, 'outside')
+    
+    find_key = [
+        's', #go to garage
+        'look body', #reveal keycard
+        "take key" #fails
+        ]
+    engine.simulate_play(find_key)
+    
+    assert_equal(engine.player.location.label, 'garage')
+    assert_equal('key' in engine.player.location.items.keys(), True)
+    assert_equal(engine.player.location.items['key'].type, 'scenery')
+    #player is in garage, key is visible but can't be taken
+    
+    cut_key = [
+        'cut key', #cuts the key out
+        'take key' #takes key
+        ]
+        
+    engine.simulate_play(cut_key)
+    
+    assert_equal(engine.player.inventory.has('key'), True)
+    
+    inject = [
+        'n', #leave garage
+        'w', #back to east hall
+        'n', #into lab
+        'look fridge', #reveal syringe
+        'take syringe',
+        'use syringe'
+        ]
+        
+    engine.simulate_play(inject)
+    
+    assert_equal(engine.player.location.label, 'lab')
+    assert_equal(engine.player.inventory.has('syringe'), True)
+    assert_equal(engine.player.injected, True)
+    
+    get_core = [
+        's', #to east hall
+        'w', #to west hall
+        'w', # down stairs
+        's', # into reactor
+        'use key', #open core
+        'take rod'
+        ]
+        
+    engine.simulate_play(get_core)
+    
+    assert_equal(engine.player.location.label, 'reactor')
+    assert_equal(engine.player.inventory.has('rod'), True)
+    
+    fix = [
+        'n', #to reactor foyer
+        'e', #to west hall
+        'e', #to east hall
+        'e', #outside
+        's', #to garage
+        'use snowmobile' #fix snowmobile
+        ]
+        
+    engine.simulate_play(fix)
+    
+    assert_equal(engine.player.location.label, 'garage')
+    assert_equal(engine.player.victory, True)
 
+def prepare_fix():
+    #I'm breaking this out into its own function so I can poke with
+    #the interpreter more easily if I have to.
+    eng = setup()
+    eng.player.location = eng.map.all_rooms['garage']
+    eng.player.inventory.add(eng.map.all_items['rod'])
+    return eng
+    
+def test_fix():
+    eng = prepare_fix()
+    eng.parse('use snowmobile')
+    
+    assert_equal(eng.player.victory, True)
+    

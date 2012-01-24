@@ -28,6 +28,8 @@ class Item(object):
         self.look_special = config['look_special']
         #change this flag to true to trigger special room-specific events when the item
         #is examined
+        
+        self.use_words = config['use_words']
 
 # Sets up item objects by creating a config dictionary for each one
 # 
@@ -68,6 +70,7 @@ def populate():
     
     for row in reader:
         row['keywords'] = row['keywords'].split()
+        row['use_words'] = row['use_words'].split()
         new_item = (create_item(row))
         all_items[new_item.label] = new_item
         
