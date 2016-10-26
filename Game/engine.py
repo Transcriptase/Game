@@ -20,6 +20,7 @@ class Engine(object):
         self.inventory_keywords = dict({
             "take":"take",
             "pick":"take",
+            "grab":"take",
             "drop":"drop",
         })
         self.menu_keywords = ["quit", "help", "i", "inv"]
