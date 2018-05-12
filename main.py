@@ -26,6 +26,9 @@ main_engine = setup()
     
 while main_engine.player.victory != True:
     action = main_engine.prompt()
+    while not action:
+        print('You must enter what you want to do')
+        action = main_engine.prompt()
     main_engine.parse(action)
     
 main_engine.victory()
