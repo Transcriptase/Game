@@ -20,12 +20,12 @@ class Mobile(object):
         self.exit = exit
         # check to see if the exit is valid/open
         if self.exit.label == 'not_found':
-            print "You can't go that way."
+            print("You can't go that way.")
         elif self.exit.shall_pass(self):
-            print "You go through the %s to the %s.\n" % (self.exit.name, self.exit.direction)
+            print("You go through the %s to the %s.\n" % (self.exit.name, self.exit.direction))
             self.new_location = self.exit.destination
         else:
-            print "You can't go that way."
+            print("You can't go that way.")
     
     def take(self, item):
         #called if the player is trying to pick something in the room up
@@ -33,11 +33,11 @@ class Mobile(object):
         self.item = item
         
         if self.item.label == "not_found":
-            print "I don't see one of those to pick up.\n"
+            print("I don't see one of those to pick up.\n")
         elif self.item.type != "carryable":
-            print "You can't pick that up.\n"
+            print("You can't pick that up.\n")
         else:
-            print "You pick up the %s.\n" % self.item.name
+            print("You pick up the %s.\n" % self.item.name)
             self.inventory.add(self.item)
             del self.location.items[self.item.label]
             
@@ -47,7 +47,7 @@ class Mobile(object):
         
         self.item = item
         if self.item.label == 'not_found':
-            print "You're not carrying one of those.\n"
+            print("You're not carrying one of those.\n")
         else:
             self.inventory.remove(self.item)
             self.location.items[self.item.label] = self.item
@@ -57,7 +57,7 @@ class Mobile(object):
         #defines the items the mobile can see, for use with the "look" command
         #adds together the items and exits in the room along with inventory items
        
-        self.things_to_look_at = dict(self.location.items.items())
+        self.things_to_look_at = dict(list(self.location.items.items()))
         self.things_to_look_at.update(self.location.exits)
         self.things_to_look_at.update(self.inventory.inv_list)
         #and here naming the dict of items "items" gets awkward
@@ -81,7 +81,7 @@ class Mobile(object):
         elif self.item.label == "fridge":
             self.location.items['syringe'].type = "carryable"
         else:
-            print "Look special failed." #shouldn't happen
+            print("Look special failed.") #shouldn't happen
             
     def use(self, item):
         #called if the parser thinks the player is trying to use an item.
@@ -101,22 +101,22 @@ class Mobile(object):
             self.use_fail()
             
     def use_fail(self):
-        print "You don't see how to do that."
+        print("You don't see how to do that.")
         
             
     def cut(self):
         if self.inventory.has('scalpel') == False:
-            print "You don't have anything to cut that with."
+            print("You don't have anything to cut that with.")
         elif self.can_cut_key() == False:
-            print "Cutting that doesn't seem like it would be a good idea."
+            print("Cutting that doesn't seem like it would be a good idea.")
         else:
-            print "You use the scalpel to cut the key free of the frozen, swollen fingers. The flesh is stiff and bloodless."
+            print("You use the scalpel to cut the key free of the frozen, swollen fingers. The flesh is stiff and bloodless.")
             self.location.items['key'].type = "carryable"
  
     def can_cut_key(self):
         if self.location.label != 'garage':
             return False
-        elif ('key' in self.location.items.keys()) == False:
+        elif ('key' in list(self.location.items.keys())) == False:
             return False
         elif self.location.items['key'].type == 'hidden':
             return False
@@ -125,27 +125,27 @@ class Mobile(object):
             
     def unlock_core(self):
         if self.inventory.has('key') == False:
-            print "You don't have anything that fits in the lock."
-        elif self.location.label != 'reactor' or ("core" in self.location.items.keys()) == False:
-            print "You don't see anything that key would unlock."
+            print("You don't have anything that fits in the lock.")
+        elif self.location.label != 'reactor' or ("core" in list(self.location.items.keys())) == False:
+            print("You don't see anything that key would unlock.")
         else:
-            print "You put the key into the lock on top of the cylinder and twist. There's a hiss as the top angles open."
+            print("You put the key into the lock on top of the cylinder and twist. There's a hiss as the top angles open.")
             del self.location.items['core']
             self.location.items['open_core'].type = "scenery"
             self.location.items['rod'].type = "carryable"
 
     def inject(self):
         if self.inventory.has('syringe') == False:
-            print "You don't have anything to inject."
+            print("You don't have anything to inject.")
         else:
-            print "It's clear what you have to do. You grit your teeth and plunge the syringe into your chest. You probably can't really feel the spread of the liquid burning through your arteries, but if feels like you can."
+            print("It's clear what you have to do. You grit your teeth and plunge the syringe into your chest. You probably can't really feel the spread of the liquid burning through your arteries, but if feels like you can.")
             self.injected = True
             
     def fix(self):
         if self.inventory.has('rod') and self.location.label == 'garage':
-            print "You slide the core into the cylinder on the side of the modified snowmobile. It slides into place snugly and the snowmobile's electronics blink to life."
+            print("You slide the core into the cylinder on the side of the modified snowmobile. It slides into place snugly and the snowmobile's electronics blink to life.")
             self.victory = True
         elif self.location.label == 'garage':
-            print "The snowmobile is totally inert.  The gas tank and battery have both been removed, and a strange cylindrical assembly mounted on the side. It will need some other power source."
+            print("The snowmobile is totally inert.  The gas tank and battery have both been removed, and a strange cylindrical assembly mounted on the side. It will need some other power source.")
         else:
-            print "You really don't think that really needs that kind of power."
+            print("You really don't think that really needs that kind of power.")

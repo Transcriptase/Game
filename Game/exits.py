@@ -1,4 +1,4 @@
-import items
+from . import items
 import csv
 
 class Exit(items.Item):
@@ -63,7 +63,7 @@ class Exit(items.Item):
         if self.is_open == True:
             return(True)
         else:
-            print "The %s is closed." #shouldn't happen
+            print("The %s is closed.") #shouldn't happen
             return(False)
             
 #to create custom "shall pass" behavior, make a substitute method below
@@ -76,23 +76,23 @@ class Exit(items.Item):
             self.is_open = True
             return(True)
         elif self.player.inventory.has('keycard'):
-            print """
+            print("""
     The reader beeps as the light turns green, and the door swings open. Outside, a howling wind whips
     across waist-deep drifts of snow. It's hard to see anything through the blizzard. You don't think
     you'd survive long out there without some protection from the cold.
-            """
+            """)
             return(False)
         else:
-            print "You think you'll need a keycard to open that door."
+            print("You think you'll need a keycard to open that door.")
             return(False)
             
     def reactor_special(self, player):
         self.player = player
         if self.player.injected == False:
-            print "You really don't think it's a good idea to go in there unprotected."
+            print("You really don't think it's a good idea to go in there unprotected.")
             return False
         else:
-            print "You step through the door. You're pretty sure that you wouldn't experience radiation exposure as a slight subdermal tingle, so that's probably your imagination."
+            print("You step through the door. You're pretty sure that you wouldn't experience radiation exposure as a slight subdermal tingle, so that's probably your imagination.")
             return True
             
 def create_exit(config):
@@ -151,7 +151,7 @@ def special_setup(all_exits):
     
 def populate():
     all_exits = {}
-    f = open('data/exits.csv', 'rb')
+    f = open('data/exits.csv', 'r')
     reader = csv.DictReader(f)
     
     for config in reader:

@@ -35,8 +35,8 @@ class Engine(object):
         
     def prompt(self):
         #prints the prompt and returns the input
-        print "\nWhat do you want to do?"
-        action = raw_input("> ")
+        print("\nWhat do you want to do?")
+        action = input("> ")
         return action
    
             
@@ -44,8 +44,8 @@ class Engine(object):
         #handles straightforward, always-available commands like "quit" and "inv"
         self.command = command
         if "quit" in self.command:
-            print "Are you sure? Press Y to quit, any other key to keep playing."
-            confirmation = raw_input("> ")
+            print("Are you sure? Press Y to quit, any other key to keep playing.")
+            confirmation = input("> ")
             if confirmation == "Y" or confirmation == "y":
                 exit(1)
             else:
@@ -62,7 +62,7 @@ class Engine(object):
         #this should be called as little as possible in favor of more specific errors
         #in that vein: tracking of commands that get this response so that I can
         #make better resposnes to common unrecognized phrases
-        print "I'm afraid I don't know what that means."
+        print("I'm afraid I don't know what that means.")
 
     def inventory_parse(self, command):
         #decides whether the command is to take, drop, or use an item and calls the appropriate
@@ -76,14 +76,14 @@ class Engine(object):
             self.item_to_try = self.mentioned_in(self.command, self.player.inventory.inv_list)
             self.player.drop(self.item_to_try)
         else:
-            print "Inventory parsing error" #should never happen
+            print("Inventory parsing error") #should never happen
             
     
     def look_fail(self, command):
         #called when a look command doesn't refer to anything
         #could be made more interesting by referring to the command
         self.command = command
-        print "You don't see anything like that."
+        print("You don't see anything like that.")
 
     def parse(self, action):  
         #breaks commands into categories and then calls an appropriate function
@@ -114,7 +114,7 @@ class Engine(object):
                 
     def use_words_lookup(self):
         self.use_words = ['use']
-        for label, item in self.player.can_see().iteritems():
+        for label, item in self.player.can_see().items():
             if item.use_words != "":
                 for word in item.use_words:
                     self.use_words.append(word)
@@ -133,7 +133,7 @@ class Engine(object):
             self.looked_at = self.mentioned_in(self.command, self.player.can_see())
         
             if self.looked_at.label != 'not_found':
-                print self.looked_at.description
+                print(self.looked_at.description)
             else:
                 self.look_fail()
             
@@ -148,7 +148,7 @@ class Engine(object):
         self.move_into(self.player.new_location)
             
     def look_fail(self):
-        print "You don't see anything like that here."
+        print("You don't see anything like that here.")
         
     def use_parse(self, command):
         #this is triggered if the command starts with a possible use word
@@ -161,7 +161,7 @@ class Engine(object):
             self.player.use(self.use_item)
             
     def use_fail(self):
-        print "You don't see any way to do that."
+        print("You don't see any way to do that.")
             
     def mentioned_in(self, command, items_to_search):
     #to use on both exits and items
@@ -176,7 +176,7 @@ class Engine(object):
         self.items_to_search = items_to_search
         self.success = False
         
-        for i, item in self.items_to_search.iteritems():
+        for i, item in self.items_to_search.items():
             for word in self.command:
                 if word in item.keywords:
                     self.exit_to_try = item
@@ -193,6 +193,6 @@ class Engine(object):
             self.parse(command)
     
     def victory(self):
-        print "With a touch of the ignition button, the snowmobile roars with way more power than it needs. You climb on and steer it out into the blinding snow, hoping you will reach civilization while you can still be described as civilized."
-        print "Congratulations! You are a winner!"
+        print("With a touch of the ignition button, the snowmobile roars with way more power than it needs. You climb on and steer it out into the blinding snow, hoping you will reach civilization while you can still be described as civilized.")
+        print("Congratulations! You are a winner!")
         exit(1)
