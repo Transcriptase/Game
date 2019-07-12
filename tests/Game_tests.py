@@ -129,7 +129,7 @@ def test_engine():
     engine.simulate_play(move_and_drop)
     
     assert_equal(engine.player.location.label, 'central_hallway_west')
-    assert_equal('scalpel' in engine.player.location.items.keys(), True)
+    assert_equal('scalpel' in list(engine.player.location.items.keys()), True)
     assert_equal(len(engine.player.inventory.inv_list), 0)
     
     #player is in west hall and has dropped scalpel
@@ -185,7 +185,7 @@ def test_engine():
     engine.simulate_play(find_key)
     
     assert_equal(engine.player.location.label, 'garage')
-    assert_equal('key' in engine.player.location.items.keys(), True)
+    assert_equal('key' in list(engine.player.location.items.keys()), True)
     assert_equal(engine.player.location.items['key'].type, 'scenery')
     #player is in garage, key is visible but can't be taken
     

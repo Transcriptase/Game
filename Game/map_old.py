@@ -1,8 +1,8 @@
-import items
-import exits
-import inventory
-import mobiles
-import rooms
+from . import items
+from . import exits
+from . import inventory
+from . import mobiles
+from . import rooms
         
 class MainPortal(Exit):
     #seems like the best way to implement complicated exit behavior is by tacking on
@@ -10,18 +10,18 @@ class MainPortal(Exit):
     #move_special attribute, then run it.
     def move_special(self, inventory):
         self.inventory = inventory
-        if ("keycard" in self.inventory.inventory.keys()) and ("parka" in self.inventory.inventory.keys()):
+        if ("keycard" in list(self.inventory.inventory.keys())) and ("parka" in list(self.inventory.inventory.keys())):
             self.is_open = True
             return("outside")
-        if ("keycard" in self.inventory.inventory.keys()):
-            print """
+        if ("keycard" in list(self.inventory.inventory.keys())):
+            print("""
   The reader beeps as the light turns green, and the door swings open. Outside, a howling wind whips
   across waist-deep drifts of snow. It's hard to see anything through the blizzard. You don't think
   you'd survive long out there without some protection from the cold.
-            """
+            """)
             return("central_hallway_east")
         else:
-            print "You think you'll need a keycard to open that door."
+            print("You think you'll need a keycard to open that door.")
             return("central_hallway_east")
     
         
@@ -43,7 +43,7 @@ class Inventory(object):
         self.item = item
         self.room_items = room_items
         
-        print "You pick up the %s." % self.item.name
+        print("You pick up the %s." % self.item.name)
         self.inventory[self.item.label]= self.item
         del self.room_items[self.item.label]
         
@@ -53,7 +53,7 @@ class Inventory(object):
         self.item = item
         self.room_items = room_items
         
-        print "You drop the %s." % self.item.name
+        print("You drop the %s." % self.item.name)
         
         self.room_items[self.item.label]=self.item
         del self.inventory[self.item.label]
@@ -65,23 +65,23 @@ class Inventory(object):
         if self.item_to_describe == "not_found":
             return False
         elif self.item_to_describe.look_special == True:
-            print self.item_to_describe.description
+            print(self.item_to_describe.description)
             return True
             self.look_special(self.item_to_describe.label)
             #not necessary to pass the item label currently b/c there's only
             #one special event per room, but that could change.
         else:
-            print self.item_to_describe.description
+            print(self.item_to_describe.description)
             return True
             
     def list(self):
     #lists the contents of the inventory, responds appropriately if inventory is empty
         if self.inventory == {}:
-            print "You are not carrying anything."
+            print("You are not carrying anything.")
         else:
-            print "You are carrying:"
-        for i, item in self.inventory.iteritems():
-            print item.name
+            print("You are carrying:")
+        for i, item in self.inventory.items():
+            print(item.name)
             
             
 class Kitchen(Room):
@@ -151,7 +151,7 @@ def mentioned_in(command, items_to_search):
     #the keyword list for each item
     
     success = False
-    for i, item in items_to_search.iteritems():
+    for i, item in items_to_search.items():
         for word in command:
             if word in item.keywords:
                 exit_to_try = item

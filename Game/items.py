@@ -68,7 +68,7 @@ def populate():
     #and returns a dictionary of all the items
     all_items = {}
     
-    f = open('data/items.csv', 'rb')
+    f = open('data/items.csv', 'r')
     reader = csv.DictReader(f)
     
     for row in reader:

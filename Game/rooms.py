@@ -15,22 +15,22 @@ class Room(object):
         
         
     def extra_description(self):
-        print '\n'
+        print('\n')
         #prints description of items and exits
-        for i, item in self.items.iteritems():
+        for i, item in self.items.items():
             if item.type != 'hidden':
-                print "There is a %s here." % item.name
-        for i, exit in self.exits.iteritems():
-            print "There is a %s to the %s." % (exit.name, exit.direction)
+                print("There is a %s here." % item.name)
+        for i, exit in self.exits.items():
+            print("There is a %s to the %s." % (exit.name, exit.direction))
         
     def describe_verbose(self):
         #prints the verbose room description
-        print "\n%s" % self.verbose_description
+        print("\n%s" % self.verbose_description)
         self.extra_description()
             
     def describe_terse(self):
         #prints the terse room description
-        print "\n%s" % self.terse_description
+        print("\n%s" % self.terse_description)
         self.extra_description()
         
     def describe(self):
@@ -50,14 +50,14 @@ class Room(object):
     #of items whose location matches the room
         self.item_list = item_list
         self.items = {}
-        for key, item in self.item_list.iteritems():
+        for key, item in self.item_list.items():
             if item.location == self.label:
                 self.items[item.label] = item
                 
     def add_exits(self, exit_list):
         self.exit_list = exit_list
         self.exits = {}
-        for key, exit in self.exit_list.iteritems():
+        for key, exit in self.exit_list.items():
             if exit.location == self.label:
                 self.exits[exit.label] = exit
     
@@ -69,7 +69,7 @@ def create_room(config):
     
 def populate():
     all_rooms = {}
-    f = open("data/rooms.csv", "rb")
+    f = open("data/rooms.csv", "r")
     reader = csv.DictReader(f)
     
     for config in reader:
